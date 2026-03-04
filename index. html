@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Abhinav's Calculator 🧮</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+    }
+
+    .calculator {
+      background: rgba(20, 20, 35, 0.95);
+      border-radius: 24px;
+      padding: 24px;
+      width: 340px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .display {
+      background: rgba(40, 40, 60, 0.8);
+      border-radius: 16px;
+      padding: 24px 20px;
+      font-size: 3rem;
+      text-align: right;
+      margin-bottom: 24px;
+      min-height: 90px;
+      overflow: hidden;
+      word-break: break-all;
+      box-shadow: inset 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    button {
+      height: 70px;
+      font-size: 1.8rem;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #2a2a3f;
+      color: #e0e0ff;
+      font-weight: 500;
+    }
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+
+    button:active {
+      transform: translateY(1px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    .operator {
+      background: #ff8c00;
+      color: white;
+      font-weight: bold;
+    }
+
+    .equal {
+      background: #00c853;
+      grid-column: span 2;
+      font-weight: bold;
+    }
+
+      .clear {
+      background: #ff5252;
+      font-weight: bold;
+    }
+
+    .zero {
+      grid-column: span 2;
+    }
+
+    .del {
+      background: #757575;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="calculator">
+    <div class="display" id="display">0</div>
+
+    <div class="buttons">
+      <button class="clear" onclick="clearAll()">C</button>
+      <button class="del" onclick="deleteLast()">DEL</button>
+      <button class="operator" onclick="append('/')">/</button>
+
+      <button onclick="append('7')">7</button>
+      <button onclick="append('8')">8</button>
+      <button onclick="append('9')">9</button>
+      <button class="operator" onclick="append('*')">×</button>
+
+      <button onclick="append('4')">4</button>
+      <button onclick="append('5')">5</button>
+      <button onclick="append('6')">6</button>
+       <button class="operator" onclick="append('-')">-</button>
+
+      <button onclick="append('1')">1</button>
+      <button onclick="append('2')">2</button>
+      <button onclick="append('3')">3</button>
+      <button class="operator" onclick="append('+')">+</button>
+
+      <button class="zero" onclick="append('0')">0</button>
+      <button onclick="append('.')">.</button>
+      <button class="equal" onclick="calculate()">=</button>
+    </div>
+  </div>
+  <script>
+    const display = document.getElementById('display');
+    let currentInput = '0';
+
+    function updateDisplay() {
+      display.textContent = currentInput || '0';
+    }
+
+    function append(value) {
+      if (currentInput === '0' && value !== '.') {
+        currentInput = value;
+      } else {
+        currentInput += value;
+      }
+      updateDisplay();
+    }
+
+    function clearAll() {
+      currentInput = '0';
+      updateDisplay();
+    }
+
+    function deleteLast() {
+      if (currentInput.length > 1) {
+        currentInput = currentInput.slice(0, -1);
+      } else {
+        currentInput = '0';
+      }
+      updateDisplay();
+    }
+    function calculate() {
+      try {
+        let expr = currentInput.replace(/×/g, '*');
+        let result = eval(expr);
+        
+        if (isNaN(result) || !isFinite(result)) {
+          throw new Error('Invalid');
+        }
+
+        currentInput = Number.isInteger(result) ? result.toString() : result.toFixed(8).replace(/\.?0+$/, '');
+      } catch {
+        currentInput = 'Error';
+        setTimeout(clearAll, 1500);
+      }
+      updateDisplay();
+    }
+       // Keyboard support
+    document.addEventListener('keydown', (e) => {
+      e.preventDefault();
+      if (e.key >= '0' && e.key <= '9' || e.key === '.') append(e.key);
+      else if (['+', '-', '*', '/'].includes(e.key)) append(e.key === '*' ? '×' : e.key);
+      else if (e.key === 'Enter' || e.key === '=') calculate();
+      else if (e.key === 'Backspace') deleteLast();
+      else if (e.key === 'Escape' || e.key.toLowerCase() === 'c') clearAll();
+    });
+
+    updateDisplay();
+  </script>
+
+</body>
+</html>
